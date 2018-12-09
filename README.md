@@ -1,8 +1,8 @@
 # cs2500-mips-simulator
-Group project for Computer Organization CSCI2500 - Pipelined MIPS Simulator
+Group project for Computer Organization CSCI2500 - Pipelined MIPS Simulator - Fall 2018
 
-Run `> python3 p1.py [arg1] [arg2]`
+Run `> python3 p1.py [mode] [input]`
 
-`[arg1]` is N for no-forwarding mode and F for forwarding mode
+`[mode]` can be "N" for no-forwarding mode or "F" for forwarding mode.
 
-`[arg2]` is a MIPS file
+`[input]` is a MIPS input file.
