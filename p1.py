@@ -30,9 +30,12 @@ if __name__ == "__main__":
 	instructions = []
 	s0 = s1 = s2 = s3 = s4 = s5 = s6 = s7 = 0
 	t0 = t1 = t2 = t3 = t4 = t5 = t6 = t7 = t8 = t9 = 0
+	start_cycle = 0	# This is to know at one cycle the instruction has started
 
 	for inst in contents:
-		instructions.append(Instruction(inst, 0, 0, False))
+		instructions.append(Instruction(inst, 0, 0, start_cycle, False))
+		start_cycle = start_cycle + 1	# Each instruction will start at the cycle that is equal to the # instruction that it is in order
+										# for example - first instruction will start at cycle 0, second instruction starts at cycle 1 ...
 
 	# Print start
 	print("START OF SIMULATION ", end = "")
@@ -41,12 +44,16 @@ if __name__ == "__main__":
 	else:
 		print("(no forwarding)")
 
-	# Go through the cycles
-	for i in range(0,16):
+	# Go through the cycles (cc = clock cycle)
+	for cc in range(0,16):
 		print("-" * 82)
 		print(cycles_header)
+
 		for x in instructions:
+			x.advanceStage(cc)
 			print(x)
+		
+
 		print()
 		print("$s0 = {:<14}$s1 = {:<14}$s2 = {:<14}$s3 = {:<14}".format(s0, s1, s2, s3))
 		print("$s4 = {:<14}$s5 = {:<14}$s6 = {:<14}$s7 = {:<14}".format(s4, s5, s6, s7))
