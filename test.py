@@ -5,7 +5,7 @@
 '''
 
 import sys
-from instructiontest import Instruction
+from Instruction import Instruction
 
 def assignRegisters(i, registers):
 	split_i = i.mips.split(" ")
@@ -31,6 +31,7 @@ if __name__ == "__main__":
 
 	# initialize variables
 	cycles_header = "{:<20}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}"\
+	cycles_header = "{:<20}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{}"\
 					.format("CPU Cycles ===>", 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16)
 	instructions = []
 	registers = {'$s0': 0, '$s1': 0, '$s2': 0, '$s3': 0,
@@ -82,6 +83,11 @@ if __name__ == "__main__":
 		print("$t0 = {:<14}$t1 = {:<14}$t2 = {:<14}$t3 = {:<14}".format(registers["$t0"], registers["$t1"], registers["$t2"], registers["$t3"]))
 		print("$t4 = {:<14}$t5 = {:<14}$t6 = {:<14}$t7 = {:<14}".format(registers["$t4"], registers["$t5"], registers["$t6"], registers["$t7"]))
 		print("$t8 = {:<14}$t9 = {:<14}".format(registers["$t8"], registers["$t9"]))
+		print("$s0 = {:<14}$s1 = {:<14}$s2 = {:<14}$s3 = {}".format(registers["$s0"], registers["$s1"], registers["$s2"], registers["$s3"]))
+		print("$s4 = {:<14}$s5 = {:<14}$s6 = {:<14}$s7 = {}".format(registers["$s4"], registers["$s5"], registers["$s6"], registers["$s7"]))
+		print("$t0 = {:<14}$t1 = {:<14}$t2 = {:<14}$t3 = {}".format(registers["$t0"], registers["$t1"], registers["$t2"], registers["$t3"]))
+		print("$t4 = {:<14}$t5 = {:<14}$t6 = {:<14}$t7 = {}".format(registers["$t4"], registers["$t5"], registers["$t6"], registers["$t7"]))
+		print("$t8 = {:<14}$t9 = {}".format(registers["$t8"], registers["$t9"]))
 
 
 	# End of the simulation

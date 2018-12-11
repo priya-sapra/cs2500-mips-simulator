@@ -9,7 +9,7 @@ class Instruction(object):
         self.cycles = ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.']
 
     def __str__(self):
-    	return ("{:<20}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}").format(
+    	return ("{:<20}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{}").format(
     			self.mips, self.cycles[0], self.cycles[1], self.cycles[2], self.cycles[3],
     			self.cycles[4], self.cycles[5], self.cycles[6], self.cycles[7],
                 self.cycles[8], self.cycles[9], self.cycles[10], self.cycles[11],

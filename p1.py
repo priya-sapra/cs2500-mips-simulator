@@ -71,6 +71,9 @@ if __name__ == "__main__":
 			if x.complete:
 				assignRegisters(x, registers)
 
+			if x.complete:
+				assignRegisters(x, registers)
+
 			# Only print instruction if instruction has started
 			if (cc >= x.start):
 				print(x)
