@@ -1,12 +1,12 @@
 class Instruction(object):
-    cycles = ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.']
-
+    
     def __init__( self, mips="", stage=0, stalls=0, start=0, complete=False):
         self.mips = mips            # actual MIPS instruction
         self.stage = stage          # current stage (0-5 for -, ID, IF, EX, MEM, WB)
         self.stalls = stalls        # number of times the instruction needs to stall
         self.complete = complete    # finished all 5 stages
         self.start = start          # cycle when the instruction starts
+        self.cycles = ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.']
 
     def __str__(self):
     	return ("{:<20}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}").format(
@@ -17,6 +17,7 @@ class Instruction(object):
     
     # add to the current stage
     def advanceStage(self, cycle): 
+        stage_names = [".", "IF", "ID", "EX", "MEM", "WB"]
         # If the instruction should be started or has been started, add 1 to the stage
         if (cycle >= self.start) and (self.complete == False):
             self.stage += 1
@@ -27,5 +28,5 @@ class Instruction(object):
         if self.stage == 5:
             self.complete = True
         # set the clock cycle stage
-        self.cycles[cycle] = self.stage
+        self.cycles[cycle] = stage_names[self.stage]
 

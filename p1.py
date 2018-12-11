@@ -7,9 +7,6 @@
 import sys
 from Instruction import Instruction
 
-# I think I'm missing something like name == "__main__" or something
-# I can't find it at the moment, but if you know it just add it in...
-# Gotcha
 if __name__ == "__main__":
 	if len(sys.argv) == 3:
 		# assign mode - F for Forwarding and N for Non-forwarding
@@ -19,7 +16,6 @@ if __name__ == "__main__":
 		file = open(sys.argv[2])
 		raw_file = file.read().strip()
 		contents = raw_file.split("\n")
-		# print(*contents, sep = ", ")
 		file.close()
 	else:
 		print("ERROR: Usage p1.py [mode] [input]")
@@ -50,10 +46,13 @@ if __name__ == "__main__":
 		print(cycles_header)
 
 		for x in instructions:
+			# Advance stage if needed (the check is done in the function)
 			x.advanceStage(cc)
-			print(x)
-		
 
+			# Only print instruction if instruction has started
+			if (cc >= x.start):
+				print(x)
+		
 		print()
 		print("$s0 = {:<14}$s1 = {:<14}$s2 = {:<14}$s3 = {:<14}".format(s0, s1, s2, s3))
 		print("$s4 = {:<14}$s5 = {:<14}$s6 = {:<14}$s7 = {:<14}".format(s4, s5, s6, s7))
@@ -66,4 +65,3 @@ if __name__ == "__main__":
 	print("-" * 82)
 	print("END OF SIMULATION")
 
-	# print("Contents: ", contents)
