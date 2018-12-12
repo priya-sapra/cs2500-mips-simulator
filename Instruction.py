@@ -1,13 +1,13 @@
 class Instruction(object):
 
-	def __init__( self, mips="", stage=0, stalls=0, start=-1, complete=False):
+	def __init__( self, mips="", stage=0, stalls=0, start=0, complete=False):
 		self.mips = mips            # actual MIPS instruction
 		self.stage = stage          # current stage (0-5 for -, ID, IF, EX, MEM, WB)
 		self.stalls = stalls        # number of times the instruction needs to stall
 		self.complete = complete    # finished all 5 stages
 		self.start = start          # cycle when the instruction starts
-		self.cycles = ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.']    
-		self.regs = []          # All the registers in the instruction
+		self.cycles = ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.']
+		self.regs = []			# All the registers in the instruction
 
 	def __str__(self):
 		return ("{:<20}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{:<4}{}").format(
@@ -30,26 +30,29 @@ class Instruction(object):
 			self.complete = True
 		# set the clock cycle stage
 		self.cycles[cycle] = stage_names[self.stage]
-		
+
 	def advanceNop(self, prevInst, cycle):
-		stage_names = [".", "IF", "ID", "*", "*", "*", "*", "*", "*", "*", "*", "*"]
+		# stage_names = ["*", "*", "*", "*", "*", "*", "*", "*", "*"]
 		# If the NOP hasn't started yet
-		if self.start == -1:
-			self.start = prevInst.start
-			self.cycles[self.start] = "IF" 
-			self.cycles[self.start+1] = "ID" 
+		if self.stage == 0:
+			self.cycles[self.start] = "IF"
+			self.cycles[self.start+1] = "ID"
 			self.cycles[self.start+2] = "*"
-			self.stage = 4
+			self.stage = 3
 		# If the instruction causing the stall is not complete, advance the nop stage
-		if prevInst.complete == False:
+		if (cycle >= self.start) and (self.complete == False):
 			self.stage += 1
-		# If the previous instruction is complete, reset to 0 and mark nop complete
-		else:
+		# If the instruction is complete, reset to 0
+		elif self.complete:
 			self.stage = 0
+		# If the delayed instruction is complete, end
+		if self.stage == 5:
 			self.complete = True
 		# set the clock cycle stage
-		self.cycles[cycle] = stage_names[self.stage]
-	
+		if self.cycles.count("*") < 3:
+			self.cycles[cycle] = "*"
+
+
 	# Isolate the registers and assign them to the Instruction attribute for registers
 	def setRegisters(self, register_names):
 		mips_split_1 = self.mips.split(" ")
