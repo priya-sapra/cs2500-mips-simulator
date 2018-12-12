@@ -5,7 +5,7 @@
 '''
 
 import sys
-from instructiontest import Instruction
+from Instruction import Instruction
 
 # Assign a numerical value to a register if needed
 def assignRegisters(i, registers):
