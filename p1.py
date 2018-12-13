@@ -6,10 +6,9 @@
 
 '''
 Still to do:
-	print NOPs
+	stalls
 	handle forwarding
 	handle loops
-	assign registers for very kind of instruction
 	handle branches
 '''
 
@@ -25,13 +24,26 @@ def assignRegisters(i, registers):
 	val = split_i[-1]
 	if val.isdigit():
 		if (command == "slti"):
-			registers[target_reg] = registers[split_i[1]]<int(val)
+			registers[target_reg] = registers[split_i[1]] < int(val)
 		elif (command == "addi"):
-			# print(registers)
-			# print("registers[split[i]] =", registers[split_i[1]])
 			registers[target_reg] = registers[split_i[1]] + int(val)
+		elif (command == "ori"):
+			registers[target_reg] = registers[split_i[1]] | int(val)
+		elif (command == "andi"):
+			registers[target_reg] = registers[split_i[1]] & int(val)
 		else:
 			registers[target_reg] = int(val)
+	else:
+		if (command == "slt"):
+			registers[target_reg] = registers[split_i[1]] < registers[val]
+		elif (command == "add"):
+			registers[target_reg] = registers[split_i[1]] + registers[val]
+		elif (command == "or"):
+			registers[target_reg] = registers[split_i[1]] | registers[val]
+		elif (command == "and"):
+			registers[target_reg] = registers[split_i[1]] & registers[val]
+		# else:
+		# 	registers[target_reg] = registers[val]
 			
 # If a register in i1 matches the TARGET REGISTER in i2, then there is a dependency and
 # we return a 1 to indicate that there is ONE NOP
@@ -74,21 +86,22 @@ if __name__ == "__main__":
 				 '$t0': 0, '$t1': 0, '$t2': 0, '$t3': 0,
 				 '$t4': 0, '$t5': 0, '$t6': 0, '$t7': 0,
 				 '$t8': 0, '$t9': 0, '$zero':0}
-
-	nop_obj = Instruction("nop", 0, 0, 0, False)
+	
+	# Make the initial nop instruction object
+	nop_obj = Instruction("nop", 0, 0, 0, False);
 
 	start_cycle = 0	# This is to know at one cycle the instruction has started
-
+	
 	for inst in contents:
 		# If the "instruction" is actually a loop hook, remove it from the list
 		if inst[-1] == ":":
 			contents.remove(inst)
-
+	
 	for inst in contents:
 		instructions.append(Instruction(inst, 0, 0, start_cycle, False))
 		start_cycle += 1	# Each instruction will start at the cycle that is equal to the # instruction that it is in order
 							# for example - first instruction will start at cycle 0, second instruction starts at cycle 1 ...
-
+		  
 	# Assign the registers that are used in each instruction
 	for i in instructions:
 		i.setRegisters(registers.keys())
@@ -103,7 +116,8 @@ if __name__ == "__main__":
 
 	nop = 0	# This is the NOP INDICATOR - if it is =1, there is one NOP, if it is =2, there are two NOPs
 	nop_line = 0 # THis is the line where the NOP goes
-
+	nop_hit = 0
+	
 
 	# Go through the cycles (cc = clock cycle)
 	for cc in range(0,16):
@@ -118,33 +132,37 @@ if __name__ == "__main__":
 		for x in instructions:
 			# Advance stage if needed (the check is done in the function)
 			x.advanceStage(cc)
+			if (mode == "N"):
+				# If we CAN check one instruction back and we haven't already checked for NOP
+				if (i_idx - 1 >= 0) and (cc >= x.start) and (nop == 0):
+					nop = checkTwoNOP(x, instructions[i_idx-1])
+					nop_line = i_idx 	# Set NOP line to mark wherever the NOP should be printed
+					if nop_hit == 0:
+						nop_obj.start = cc+1
+					nop_obj.advanceNop(cc)
 
-			# If we CAN check one instruction back and we haven't already checked for NOP
-			if (i_idx - 1 >= 0) and (cc >= x.start+2) and (nop == 0):
-				nop = checkTwoNOP(x, instructions[i_idx-1])
-				nop_line = i_idx 	# Set NOP line to mark wherever the NOP should be printed
-				nop_obj.start = nop_line
-				nop_obj.advanceNop(instructions[i_idx], cc)
-
-			# If we CAN check two instructions back and we haven't already checked for NOP
-			if (i_idx - 2 >= 0) and (cc >= x.start+2) and (nop == 0):
-				nop = checkOneNOP(x, instructions[i_idx-2])
-				nop_line = i_idx 	# Set NOP line to mark wherever the NOP should be printed
-				nop_obj.start = nop_line
-				nop_obj.advanceNop(instructions[i_idx], cc)
+				# If we CAN check two instructions back and we haven't already checked for NOP
+				if (i_idx - 2 >= 0) and (cc >= x.start) and (nop == 0):
+					nop = checkOneNOP(x, instructions[i_idx-2])
+					nop_line = i_idx 	# Set NOP line to mark wherever the NOP should be printed
+					if nop_hit == 0:
+						nop_obj.start = cc+1
+					nop_obj.advanceNop(cc)
 
 			# If current instruction is complete (reach WB), then we want to update the registers
-			if (x.stage==5):
+			if (x.stage == 5):
 				assignRegisters(x, registers)
 
 			# Only print instruction if instruction has started
 			if (cc >= x.start):
-				if (nop > 0):
-					for j in range (0, nop):
-						print(nop_obj)
+				if nop > 0 :
+					for j in range (0,nop):
+						if cc >= nop_obj.start+1:
+							print(nop_obj)
+						nop_hit = 1
 					nop = 0
 				print(x)
-
+				
 			# Increment i_idx
 			i_idx += 1
 

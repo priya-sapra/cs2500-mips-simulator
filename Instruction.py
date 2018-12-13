@@ -31,26 +31,24 @@ class Instruction(object):
 		# set the clock cycle stage
 		self.cycles[cycle] = stage_names[self.stage]
 
-	def advanceNop(self, prevInst, cycle):
+	def advanceNop(self, cycle):
 		# stage_names = ["*", "*", "*", "*", "*", "*", "*", "*", "*"]
-		# If the NOP hasn't started yet
-		if self.stage == 0:
+		# If the NOP hasn't started yet, set the intial IF, ID, *
+		if self.stage == 0 and cycle+1 == self.start:
 			self.cycles[self.start] = "IF"
 			self.cycles[self.start+1] = "ID"
 			self.cycles[self.start+2] = "*"
 			self.stage = 3
-		# If the instruction causing the stall is not complete, advance the nop stage
-		if (cycle >= self.start) and (self.complete == False):
-			self.stage += 1
+			return
 		# If the instruction is complete, reset to 0
-		elif self.complete:
+		if self.complete:
 			self.stage = 0
-		# If the delayed instruction is complete, end
-		if self.stage == 5:
-			self.complete = True
-		# set the clock cycle stage
-		if self.cycles.count("*") < 3:
+		
+		# add necessary stars
+		if self.cycles.count("*") < 3 and cycle >= self.start+2:
 			self.cycles[cycle] = "*"
+		else:
+			self.complete = True
 
 
 	# Isolate the registers and assign them to the Instruction attribute for registers
